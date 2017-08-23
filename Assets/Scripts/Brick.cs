@@ -27,18 +27,15 @@ public class Brick : MonoBehaviour, IComparable<Brick> {
 	}
 	
 	void OnCollisionEnter2D(Collision2D collision) {
-		int multiplyer = getMultiplyer();
-		Debug.Log (multiplyer);
 		if (stages.Length > 0 && stages.Length > timesHit) {
-			Color c = this.stages[this.timesHit];
-			gameObject.GetComponent<SpriteRenderer>().color = new Color(c.r,c.g,c.b);
+			updateScore(3);
+			updateColor();
 			this.timesHit++;
-			LevelManager.AddToScore(3 * multiplyer);
 		} else {
 			if (this.tag != "Unbreakable") {
+				updateScore(5);
 				Brick.numOfBricksInScene--;
 				Destroy(this.gameObject);
-				LevelManager.AddToScore(5 * multiplyer);
 				if (Brick.numOfBricksInScene <= 0) {
 					levelManager.LoadNextLevel();
 				}
@@ -48,19 +45,30 @@ public class Brick : MonoBehaviour, IComparable<Brick> {
 	
 	void OnTriggerEnter2D(Collider2D collider) {
 		if (this.tag == "0-Hit") {
-			int multiplyer = getMultiplyer();
-			Debug.Log (multiplyer);
+			updateScore(2);
 			Brick.numOfBricksInScene--;
 			Destroy(this.gameObject);
-			LevelManager.AddToScore(5 * multiplyer);
 			if (Brick.numOfBricksInScene <= 0) {
 				levelManager.LoadNextLevel();
 			}
 		}
 	}
 	
-	private int getMultiplyer() {
+	private void updateColor() {
+		Color c = this.stages[this.timesHit];
+		gameObject.GetComponent<SpriteRenderer>().color = new Color(c.r,c.g,c.b);
+	}
+	
+	private void updateScore(int score) {
+		Color c = gameObject.GetComponent<SpriteRenderer>().color;
+		int multiplier = getMultiplier();
+		LevelManager.AddToScore(score * multiplier);
+		FloatingTextController.CreateFloatingText(multiplier.ToString() + "X", c, transform);
+	}
+	
+	private int getMultiplier() {
 		int val = UnityEngine.Random.Range(1, 9999);
+		
 		if (val < 5001) {
 			return 1;
 		} else if (val < 7501) {

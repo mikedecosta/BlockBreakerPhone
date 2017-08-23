@@ -8,6 +8,10 @@ public class LevelManager : MonoBehaviour {
 	private static int nextExtraLife = 500;
 	private static int extraLifeIncrement = 500;
 	
+	void Start() {
+		FloatingTextController.Initilize();
+	}
+	
 	public static void AddToScore(int addTo) {
 		score += addTo;
 		if (score >= nextExtraLife) {
